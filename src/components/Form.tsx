@@ -1,22 +1,32 @@
-import { useState } from "react"
+import { useState, ChangeEvent } from "react"
+import { Activity } from "../types"
 import { categories } from "../data/categories"
 
 export default function Form() {
 
-    const [activity, setActivity] = useState({
+    const [activity, setActivity] = useState<Activity>({
         category: 1,
         nameActivity: '',
         calories: 0
     })
 
     // Escuchamos si algo cambio
-    const handleChange = (e) => {
+    const handleChange = (e : ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>) => {
         // console.log('algo cambio')
+
+        const insNumberField = ['category', 'calories'].includes(e.target.id) // verificamos cual debe ser de tipo 'Number', antes de setear al State
+        
         setActivity({
             ...activity,
-            [e.target.id]: e.target.value
+            [e.target.id]: insNumberField ? +e.target.value : e.target.value
         })
 
+    }
+
+    const isValidActivity = () => {
+        const {nameActivity, calories} = activity
+        console.log(nameActivity.trim() !== '' && calories > 0)
+        return nameActivity.trim() !== '' && calories > 0
     }
 
   return (
@@ -68,8 +78,9 @@ export default function Form() {
 
         <input 
             type="submit"
-            className=" bg-gray-800 hover:bg-gray-900 text-white font-bold w-full p-2 uppercase"
+            className=" bg-gray-800 hover:bg-gray-900 text-white font-bold w-full p-2 uppercase disabled:opacity-10"
             value="Guardar actividad"
+            disabled={!isValidActivity()}
         />
     </form>
   )
